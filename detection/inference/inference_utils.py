@@ -10,7 +10,7 @@ from detectron2.layers import batched_nms
 from detectron2.structures import BoxMode, Boxes, Instances, pairwise_iou
 
 # Project imports
-from inference.image_corruptions import corruption_dict, corruption_tuple
+# from inference.image_corruptions import corruption_dict, corruption_tuple
 from inference.probabilistic_retinanet_predictor import RetinaNetProbabilisticPredictor
 from inference.probabilistic_rcnn_predictor import GeneralizedRcnnProbabilisticPredictor
 #from inference.probabilistic_detr_predictor import DetrProbabilisticPredictor

@@ -1,0 +1,8 @@
+*.pyc
+*.pth
+*.tfevents.*
+*.pkl
+*log.txt
+*data*
+*savefig*
+*visualization*

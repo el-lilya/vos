@@ -128,7 +128,7 @@ class ProbabilisticPredictor(ABC):
         inter_feat = results.inter_feat[0:max_boxes]
         if energy_threshold:
             labels[(np.argwhere(
-                torch.logsumexp(inter_feat[:, :-1], dim=1).cpu().data.numpy() < energy_threshold)).reshape(-1)] = 10
+                torch.logsumexp(inter_feat[:, :-1], dim=1).cpu().data.numpy() < energy_threshold)).reshape(-1)] = -1
         # # if name == '133631':
         #     # breakpoint()
         # # breakpoint()

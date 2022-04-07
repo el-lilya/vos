@@ -8,7 +8,7 @@ from detectron2.data.datasets import register_coco_instances
 import core.datasets.metadata as metadata
 
 
-def setup_all_datasets(dataset_dir, image_root_corruption_prefix=None):
+def setup_all_datasets(dataset_dir, image_root_corruption_prefix=None,):
     """
     Registers all datasets as instances from COCO
 
@@ -16,286 +16,151 @@ def setup_all_datasets(dataset_dir, image_root_corruption_prefix=None):
         dataset_dir(str): path to dataset directory
 
     """
-    setup_voc_dataset(dataset_dir)
-    setup_coco_dataset(
-        dataset_dir,
-        image_root_corruption_prefix=image_root_corruption_prefix)
-    setup_coco_ood_dataset(dataset_dir)
-    setup_openim_odd_dataset(dataset_dir)
-    setup_bdd_dataset(dataset_dir)
-    setup_coco_ood_bdd_dataset(dataset_dir)
+    root_img_dir='/ssd/l.lemikhova/data/fruits'
+    root_ann_dir='./data'
+    setup_coco_only_fruits_dataset(root_img_dir, root_ann_dir)
+    setup_coco_ext_fruits_dataset(root_img_dir, root_ann_dir)
+    setup_openim_id_fruits_dataset(root_img_dir, root_ann_dir)
+    setup_openim_ood_fruits_dataset(root_img_dir, root_ann_dir)
+    setup_openim_full_fruits_dataset(root_img_dir, root_ann_dir)
 
-def setup_coco_dataset(dataset_dir, image_root_corruption_prefix=None):
-    """
-    sets up coco dataset following detectron2 coco instance format. Required to not have flexibility on where the dataset
-    files can be.
-    """
-    train_image_dir = os.path.join(dataset_dir, 'train2017')
+def setup_coco_only_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/fruits', root_ann_dir='./data'):
+    img_dir = f'{root_img_dir}/coco'
+    train_image_dir = os.path.join(img_dir, 'train2017')
+    test_image_dir = os.path.join(img_dir, 'train2017')
 
-    if image_root_corruption_prefix is not None:
-        test_image_dir = os.path.join(
-            dataset_dir, 'val2017' + image_root_corruption_prefix)
-    else:
-        test_image_dir = os.path.join(dataset_dir, 'val2017')
-
+    ann_dir = f'{root_ann_dir}/coco_only'
     train_json_annotations = os.path.join(
-        dataset_dir, 'annotations', 'instances_train2017.json')
+        ann_dir, 'COCO-Format', 'train_coco_format.json')
     test_json_annotations = os.path.join(
-        dataset_dir, 'annotations', 'instances_val2017.json')
+        ann_dir, 'COCO-Format', 'val_coco_format.json')
+    register_coco_instances(
+        "coco_fruits_train",
+        {},
+        train_json_annotations,
+        train_image_dir)
+    # del MetadataCatalog.get("coco_fruits_train").thing_dataset_id_to_contiguous_id
+    MetadataCatalog.get(
+        "coco_fruits_train").thing_classes = metadata.COCO_FRUITS_THING_CLASSES
+    MetadataCatalog.get(
+        "coco_fruits_train").thing_dataset_id_to_contiguous_id = metadata.COCO_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
     register_coco_instances(
-        "coco_2017_custom_train",
+        "coco_fruits_val",
+        {},
+        test_json_annotations,
+        test_image_dir)
+    MetadataCatalog.get(
+        "coco_fruits_val").thing_classes = metadata.COCO_FRUITS_THING_CLASSES
+    MetadataCatalog.get(
+        "coco_fruits_val").thing_dataset_id_to_contiguous_id = metadata.COCO_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
+
+def setup_coco_ext_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/fruits', root_ann_dir='./data'):
+    img_dir = f'{root_img_dir}/coco'
+    train_image_dir = os.path.join(img_dir, 'train2017')
+    test_image_dir = os.path.join(img_dir, 'train2017')
+
+    ann_dir = f'{root_ann_dir}/coco_ext'
+    train_json_annotations = os.path.join(
+        ann_dir, 'COCO-Format', 'train_coco_format.json')
+    test_json_annotations = os.path.join(
+        ann_dir, 'COCO-Format', 'val_coco_format.json')
+    register_coco_instances(
+        "coco_ext_fruits_train",
         {},
         train_json_annotations,
         train_image_dir)
     MetadataCatalog.get(
-        "coco_2017_custom_train").thing_classes = metadata.COCO_THING_CLASSES
+        "coco_ext_fruits_train").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
+    print(MetadataCatalog.get("coco_ext_fruits_train").thing_classes)
     MetadataCatalog.get(
-        "coco_2017_custom_train").thing_dataset_id_to_contiguous_id = metadata.COCO_THING_DATASET_ID_TO_CONTIGUOUS_ID
+        "coco_ext_fruits_train").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
     register_coco_instances(
-        "coco_2017_custom_val",
+        "coco_ext_fruits_val",
         {},
         test_json_annotations,
         test_image_dir)
     MetadataCatalog.get(
-        "coco_2017_custom_val").thing_classes = metadata.COCO_THING_CLASSES
+        "coco_ext_fruits_val").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
     MetadataCatalog.get(
-        "coco_2017_custom_val").thing_dataset_id_to_contiguous_id = metadata.COCO_THING_DATASET_ID_TO_CONTIGUOUS_ID
+        "coco_ext_fruits_val").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
-
-def setup_openim_dataset(dataset_dir):
-    """
-    sets up openimages dataset following detectron2 coco instance format. Required to not have flexibility on where the dataset
-    files can be.
-
-    Only validation is supported.
-    """
-    # import ipdb; ipdb.set_trace()
-    test_image_dir = os.path.join(dataset_dir, 'images')
-
-    test_json_annotations = os.path.join(
-        dataset_dir, 'COCO-Format', 'val_coco_format.json')
-
-    register_coco_instances(
-        "openimages_val",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    MetadataCatalog.get(
-        "openimages_val").thing_classes = metadata.COCO_THING_CLASSES
-    MetadataCatalog.get(
-        "openimages_val").thing_dataset_id_to_contiguous_id = metadata.OPENIMAGES_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-
-def setup_openim_odd_dataset(dataset_dir):
-    """
-    sets up openimages out-of-distribution dataset following detectron2 coco instance format. Required to not have flexibility on where the dataset
-    files can be.
-
-    Only validation is supported.
-    """
-    test_image_dir = os.path.join(dataset_dir + 'ood_classes_rm_overlap', 'images')
-
-    test_json_annotations = os.path.join(
-        dataset_dir, 'COCO-Format', 'val_coco_format.json')
-
-    register_coco_instances(
-        "openimages_ood_val",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    MetadataCatalog.get(
-        "openimages_ood_val").thing_classes = metadata.COCO_THING_CLASSES
-    MetadataCatalog.get(
-        "openimages_ood_val").thing_dataset_id_to_contiguous_id = metadata.OPENIMAGES_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-
-
-def setup_voc_id_dataset(dataset_dir):
-    train_image_dir = os.path.join(dataset_dir, 'JPEGImages')
-    # else:
-    test_image_dir = os.path.join(dataset_dir, 'JPEGImages')
-
+def setup_openim_id_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/fruits', root_ann_dir='./data'):
+    img_dir = f'{root_img_dir}/openim'
+    train_image_dir = img_dir
+    test_image_dir = img_dir
+    ann_dir = f'{root_ann_dir}/openim_id'
     train_json_annotations = os.path.join(
-        dataset_dir, 'voc0712_train_all.json')
+        ann_dir, 'COCO-Format', 'train_coco_format.json')
     test_json_annotations = os.path.join(
-        dataset_dir, 'val_coco_format.json')
-
+        ann_dir, 'COCO-Format', 'val_coco_format.json')
     register_coco_instances(
-        "voc_custom_train_id",
+        "openim_id_fruits_train",
         {},
         train_json_annotations,
         train_image_dir)
     MetadataCatalog.get(
-        "voc_custom_train_id").thing_classes = metadata.VOC_ID_THING_CLASSES
+        "openim_id_fruits_train").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
     MetadataCatalog.get(
-        "voc_custom_train_id").thing_dataset_id_to_contiguous_id = metadata.VOC_THING_DATASET_ID_TO_CONTIGUOUS_ID_in_domain
+        "openim_id_fruits_train").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
     register_coco_instances(
-        "voc_custom_val_id",
+        "openim_id_fruits_val",
         {},
         test_json_annotations,
         test_image_dir)
     MetadataCatalog.get(
-        "voc_custom_val_id").thing_classes = metadata.VOC_ID_THING_CLASSES
+        "openim_id_fruits_val").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
     MetadataCatalog.get(
-        "voc_custom_val_id").thing_dataset_id_to_contiguous_id = metadata.VOC_THING_DATASET_ID_TO_CONTIGUOUS_ID_in_domain
+        "openim_id_fruits_val").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
-
-
-def setup_bdd_dataset(dataset_dir):
-    train_image_dir = os.path.join(dataset_dir, 'images/100k/train')
-    # else:
-    test_image_dir = os.path.join(dataset_dir, 'images/100k/val')
-
-    train_json_annotations = os.path.join(
-        dataset_dir, 'train_bdd_converted.json')
+def setup_openim_ood_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/fruits', root_ann_dir='./data'):
+    img_dir = f'{root_img_dir}/openim'
+    test_image_dir = img_dir
+    ann_dir = f'{root_ann_dir}/openim_ood'
     test_json_annotations = os.path.join(
-        dataset_dir, 'val_bdd_converted.json')
-
+        ann_dir, 'COCO-Format', 'val_coco_format.json')
     register_coco_instances(
-        "bdd_custom_train",
+        "openim_ood_fruits_val",
+        {},
+        test_json_annotations,
+        test_image_dir)    
+    # MetadataCatalog.get(
+    #     "openim_ood_fruits_val").thing_classes = metadata.COCO_FRUITS_THING_CLASSES
+    # MetadataCatalog.get(
+    #     "openim_ood_fruits_val").thing_dataset_id_to_contiguous_id = metadata.COCO_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
+    MetadataCatalog.get(
+        "openim_ood_fruits_val").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
+    MetadataCatalog.get(
+        "openim_ood_fruits_val").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
+
+def setup_openim_full_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/fruits', root_ann_dir='./data'):
+    img_dir = f'{root_img_dir}/openim'
+    train_image_dir = img_dir
+    test_image_dir = img_dir
+    ann_dir = f'{root_ann_dir}/openim_full'
+    train_json_annotations = os.path.join(
+        ann_dir, 'COCO-Format', 'train_coco_format.json')
+    test_json_annotations = os.path.join(
+        ann_dir, 'COCO-Format', 'val_coco_format.json')
+    register_coco_instances(
+        "openim_full_fruits_train",
         {},
         train_json_annotations,
         train_image_dir)
     MetadataCatalog.get(
-        "bdd_custom_train").thing_classes = metadata.BDD_THING_CLASSES
+        "openim_full_fruits_train").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
     MetadataCatalog.get(
-        "bdd_custom_train").thing_dataset_id_to_contiguous_id = metadata.BDD_THING_DATASET_ID_TO_CONTIGUOUS_ID
+        "openim_full_fruits_train").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
     register_coco_instances(
-        "bdd_custom_val",
+        "openim_full_fruits_val",
         {},
         test_json_annotations,
         test_image_dir)
     MetadataCatalog.get(
-        "bdd_custom_val").thing_classes = metadata.BDD_THING_CLASSES
+        "openim_full_fruits_val").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
     MetadataCatalog.get(
-        "bdd_custom_val").thing_dataset_id_to_contiguous_id = metadata.BDD_THING_DATASET_ID_TO_CONTIGUOUS_ID
+        "openim_full_fruits_val").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
 
-
-def setup_voc_dataset(dataset_dir):
-    train_image_dir = os.path.join(dataset_dir, 'JPEGImages')
-    # else:
-    test_image_dir = os.path.join(dataset_dir, 'JPEGImages')
-
-    train_json_annotations = os.path.join(
-        dataset_dir, 'voc0712_train_all.json')
-    test_json_annotations = os.path.join(
-        dataset_dir, 'val_coco_format.json')
-
-    register_coco_instances(
-        "voc_custom_train",
-        {},
-        train_json_annotations,
-        train_image_dir)
-    MetadataCatalog.get(
-        "voc_custom_train").thing_classes = metadata.VOC_THING_CLASSES
-    MetadataCatalog.get(
-        "voc_custom_train").thing_dataset_id_to_contiguous_id = metadata.VOC_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-    register_coco_instances(
-        "voc_custom_val",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    MetadataCatalog.get(
-        "voc_custom_val").thing_classes = metadata.VOC_THING_CLASSES
-    MetadataCatalog.get(
-        "voc_custom_val").thing_dataset_id_to_contiguous_id = metadata.VOC_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-
-def setup_voc_ood_dataset(dataset_dir):
-    test_image_dir = os.path.join(dataset_dir, 'JPEGImages')
-
-    test_json_annotations = os.path.join(
-        dataset_dir, 'val_coco_format.json')
-
-    register_coco_instances(
-        "voc_ood_val",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    MetadataCatalog.get(
-        "voc_ood_val").thing_classes = metadata.VOC_OOD_THING_CLASSES
-    MetadataCatalog.get(
-        "voc_ood_val").thing_dataset_id_to_contiguous_id = metadata.VOC_THING_DATASET_ID_TO_CONTIGUOUS_ID_in_domain
-
-
-def setup_coco_ood_dataset(dataset_dir):
-    test_image_dir = os.path.join(dataset_dir, 'val2017')
-
-    # test_json_annotations = os.path.join(
-    #     dataset_dir, 'COCO-Format', 'val_coco_format.json')
-    test_json_annotations = os.path.join(
-        dataset_dir, 'annotations', 'instances_val2017_ood_rm_overlap.json')
-
-    register_coco_instances(
-        "coco_ood_val",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    # import ipdb; ipdb.set_trace()
-    MetadataCatalog.get(
-        "coco_ood_val").thing_classes = metadata.COCO_THING_CLASSES
-    MetadataCatalog.get(
-        "coco_ood_val").thing_dataset_id_to_contiguous_id = metadata.COCO_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-def setup_coco_ood_bdd_dataset(dataset_dir):
-    test_image_dir = os.path.join(dataset_dir, 'val2017')
-
-    # test_json_annotations = os.path.join(
-    #     dataset_dir, 'COCO-Format', 'val_coco_format.json')
-    test_json_annotations = os.path.join(
-        dataset_dir, 'annotations', 'instances_val2017_ood_wrt_bdd_rm_overlap.json')
-
-    register_coco_instances(
-        "coco_ood_val_bdd",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    # import ipdb; ipdb.set_trace()
-    MetadataCatalog.get(
-        "coco_ood_val_bdd").thing_classes = metadata.COCO_THING_CLASSES
-    MetadataCatalog.get(
-        "coco_ood_val_bdd").thing_dataset_id_to_contiguous_id = metadata.COCO_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-
-def setup_coco_ood_train_dataset(dataset_dir):
-    test_image_dir = os.path.join(dataset_dir, 'train2017')
-
-    # test_json_annotations = os.path.join(
-    #     dataset_dir, 'COCO-Format', 'val_coco_format.json')
-    test_json_annotations = os.path.join(
-        dataset_dir, 'annotations', 'instances_train2017_ood.json')
-
-    register_coco_instances(
-        "coco_ood_train",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    # import ipdb; ipdb.set_trace()
-    MetadataCatalog.get(
-        "coco_ood_train").thing_classes = metadata.COCO_THING_CLASSES
-    MetadataCatalog.get(
-        "coco_ood_train").thing_dataset_id_to_contiguous_id = metadata.COCO_THING_DATASET_ID_TO_CONTIGUOUS_ID
-
-def setup_openimages_ood_oe_dataset(dataset_dir):
-    test_image_dir = os.path.join(dataset_dir, 'images')
-
-    # test_json_annotations = os.path.join(
-    #     dataset_dir, 'COCO-Format', 'val_coco_format.json')
-    test_json_annotations = os.path.join(
-        dataset_dir, 'COCO-Format', 'val_coco_format.json')
-
-    register_coco_instances(
-        "openimages_ood_oe",
-        {},
-        test_json_annotations,
-        test_image_dir)
-    # import ipdb; ipdb.set_trace()
-    MetadataCatalog.get(
-        "openimages_ood_oe").thing_classes = metadata.COCO_THING_CLASSES
-    MetadataCatalog.get(
-        "openimages_ood_oe").thing_dataset_id_to_contiguous_id = metadata.OPENIMAGES_THING_DATASET_ID_TO_CONTIGUOUS_ID

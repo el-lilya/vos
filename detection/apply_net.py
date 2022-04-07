@@ -1,3 +1,4 @@
+# CUDA_VISIBLE_DEVICES=0 python vos/detection/apply_net.py --dataset-dir data --test-dataset openim_ood_fruits_val  --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --inference-config Inference/standard_nms.yaml  --random-seed 0 --image-corruption-level 0 --visualize 1
 """
 Probabilistic Detectron Inference Script
 """
@@ -20,7 +21,8 @@ from detectron2.data import build_detection_test_loader, MetadataCatalog
 # Project imports
 from core.evaluation_tools.evaluation_utils import get_train_contiguous_id_to_test_thing_dataset_id_dict
 from core.setup import setup_config, setup_arg_parser
-from offline_evaluation import compute_average_precision, compute_probabilistic_metrics, compute_ood_probabilistic_metrics, compute_calibration_errors
+from offline_evaluation import compute_average_precision, compute_probabilistic_metrics, compute_ood_probabilistic_metrics
+# from offline_evaluation import compute_average_precision, compute_probabilistic_metrics, compute_ood_probabilistic_metrics, compute_calibration_errors
 from inference.inference_utils import instances_to_json, get_inference_output_dir, build_predictor
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -124,6 +126,8 @@ if __name__ == "__main__":
     # Create arg parser
     arg_parser = setup_arg_parser()
     args = arg_parser.parse_args()
+    if 'ood' in args.test_dataset:
+        args.savefigdir += '_ood'
     # Support single gpu inference only.
     args.num_gpus = 1
     # args.num_machines = 8
