@@ -61,7 +61,7 @@ def main(args, cfg=None):
     optimal_score_threshold = optimal_score_threshold.mean()
 
     print("Classification Score at Optimal F-1 Score: {}".format(optimal_score_threshold))
-
+    breakpoint()
     text_file_name = os.path.join(
         inference_output_dir,
         'mAP_res.txt')

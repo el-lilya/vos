@@ -82,14 +82,9 @@ def fpr_and_fdr_at_recall(y_true, y_score, recall_level=recall_level_default,
     recall, fps, tps, thresholds = np.r_[recall[sl], 1], np.r_[fps[sl], 0], np.r_[tps[sl], 0], thresholds[sl]
 
     cutoff = np.argmin(np.abs(recall - recall_level))
-
-    # 8.868, ours
-    # 5.772, vanilla
-    # 5.478, vanilla 18000
-    # 6.018, oe
-    # 102707,
-    # 632
-    # 5992
+    print('energy threshold', thresholds[cutoff])
+    # 8.868, orig
+    # 5.091 fruits vos_7
     # breakpoint()
     if return_index:
         return fps[cutoff] / (np.sum(np.logical_not(y_true))), index_for_id_initial, index_for_ood_initial

@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=0 python vos/detection/apply_net.py --dataset-dir data --test-dataset openim_ood_fruits_val  --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --inference-config Inference/standard_nms.yaml  --random-seed 0 --image-corruption-level 0 --visualize 1
+# CUDA_VISIBLE_DEVICES=4 python detection/apply_net.py --dataset-dir data --test-dataset deep_fruits_id_fruits_test  --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --inference-config Inference/standard_nms.yaml  --random-seed 0 --image-corruption-level 0 --visualize 1
 """
 Probabilistic Detectron Inference Script
 """
@@ -97,7 +97,11 @@ def main(args):
                                                       savedir=args.savefigdir,
                                                       name=str(input_im[0]['image_id']),
                                                       cfg=cfg,
-                                                      energy_threshold=8.868)
+                                                      energy_threshold=5.732,  # recall 80, fpr 52
+                                                    #   energy_threshold=4.241,  # recall 95, fpr 83
+                                                    #   energy_threshold=5.091, # vos_7 openim
+                                                    #   energy_threshold=8.868,
+                                                      )
 
 
                     final_output_list.extend(

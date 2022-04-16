@@ -19,20 +19,21 @@ def get_openim_fruits_dicts(stage, root = "./data/openim", output_dir=None):  #'
     idx = 0
     count = 0
     while filename != '':
+        annotation_list_file = []
         full_filename = os.path.join(root, filename)
         height, width = cv2.imread(full_filename).shape[:2]
         num = int(f.readline())
         num_ID_boxes = 0
+        has_ood = False
         for i in range(num):
             line = f.readline()
             bbox = list(map(float, line.split(' ')[:4]))
             category_name = ' '.join(line.split(' ')[4:])[:-1]
-            if idx == 8 and stage == 'val':
-                print(category_name)
             if category_name not in category_mapper.keys():
-                continue
+                has_ood = True
+                break
             label = category_mapper[category_name]
-            annotations_list.append({'image_id': idx,
+            annotation_list_file.append({'image_id': idx,
                                     'id': count,
                                     'category_id': label,
                                     'bbox': bbox,
@@ -42,7 +43,8 @@ def get_openim_fruits_dicts(stage, root = "./data/openim", output_dir=None):  #'
                                     'is_occluded': 0})
             count += 1
             num_ID_boxes += 1
-        if num_ID_boxes > 0:
+        if num_ID_boxes > 0 and not has_ood:
+            annotations_list += annotation_list_file
             images_list.append({'id': idx,
                             'width': width,
                             'height': height,

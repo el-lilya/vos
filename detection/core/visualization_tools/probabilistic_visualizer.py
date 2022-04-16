@@ -164,7 +164,8 @@ class ProbabilisticVisualizer(Visualizer):
                 font_size = (
                     np.clip((height_ratio - 0.02) / 0.08 + 1, 1.2, 2)
                     * 0.5
-                    * self._default_font_size * 3
+                    * self._default_font_size * 1
+                    # * self._default_font_size * 3
                 )
                 # font_size = self._default_font_size * 1.5
                 self.draw_text(
@@ -203,7 +204,8 @@ class ProbabilisticVisualizer(Visualizer):
                 height,
                 fill=False,
                 edgecolor=edge_color,
-                linewidth=linewidth * self.output.scale * 5,
+                linewidth=linewidth * self.output.scale * 1,
+                # linewidth=linewidth * self.output.scale * 5,
                 alpha=alpha,
                 linestyle=line_style,
             )

@@ -272,8 +272,8 @@ MODEL:
     NAME: SemSegFPNHead
     NORM: GN
     NUM_CLASSES: 54
-  WEIGHTS: detectron2://ImageNetPretrained/MSRA/R-50.pkl
-OUTPUT_DIR: /netapp/l.lemikhova/projects/VOS/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0
+  WEIGHTS: /netapp/l.lemikhova/projects/VOS/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0/model_final.pth
+OUTPUT_DIR: /netapp/l.lemikhova/projects/VOS_forked/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0
 PROBABILISTIC_INFERENCE:
   AFFINITY_THRESHOLD: 0.7
   BAYES_OD:

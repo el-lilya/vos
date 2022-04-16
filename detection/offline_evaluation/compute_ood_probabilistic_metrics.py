@@ -174,6 +174,7 @@ def main(
             with open(os.path.join(train_set_inference_output_dir, "mAP_res.txt"), "r") as f:
                 min_allowed_score = f.read().strip('][\n').split(', ')[-1]
                 min_allowed_score = round(float(min_allowed_score), 4)
+                print(min_allowed_score)
         except FileNotFoundError:
             # If not, process all detections. Not recommended as the results might be influenced by very low scoring
             # detections that would normally be removed in robotics/vision
