@@ -1,13 +1,11 @@
-# CUDA_VISIBLE_DEVICES=0 python vos/detection/train_net_gmm.py --num-gpus 1 --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --random-seed 0 
+# CUDA_VISIBLE_DEVICES=0 python vos/detection/train_net_gmm.py --num-gpus 1 --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --random-seed 1 
 
 _BASE_: "../../../Base-RCNN-FPN.yaml"
 MODEL:
   # META_ARCHITECTURE: "GeneralizedRCNN"
   META_ARCHITECTURE: "GeneralizedRCNNLogisticGMM"
-  # WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
-  # WEIGHTS: "https://dl.fbaipublicfiles.com/detectron2/COCO-Detection/faster_rcnn_R_50_FPN_3x/137849458/model_final_280758.pkl"
-  # WEIGHTS: "/netapp/l.lemikhova/projects/VOS/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0/model_0004999.pth"
-  WEIGHTS: "/netapp/l.lemikhova/projects/VOS/vos/detection/data/Faster-RCNN/coco_openim/vos_7/random_seed_0/model_final.pth"
+  WEIGHTS: "/netapp/l.lemikhova/projects/VOS_forked/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0/model_0004999.pth"
+  # WEIGHTS: "/netapp/l.lemikhova/projects/VOS_forked/vos/detection/data/Faster-RCNN/coco_openim/vos_7/random_seed_0/model_final.pth"
 
 
   MASK_ON: False
@@ -21,7 +19,10 @@ INPUT:
   MIN_SIZE_TRAIN: (640, )  # (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
   MAX_SIZE_TRAIN: 640  # 640
   MIN_SIZE_TEST: 640  # 800
-  MAX_SIZE_TEST: 640  # 800
+  # MAX_SIZE_TEST: 640  # 800
+# INPUT:
+#   MIN_SIZE_TRAIN: (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
+#   MIN_SIZE_TEST: 800
 DATASETS:
   TRAIN: ('coco_ext_fruits_train', 'openim_id_fruits_train')
   TEST: ('openim_id_fruits_val', )
@@ -33,11 +34,9 @@ SOLVER:
   WARMUP_ITERS: 100
   CHECKPOINT_PERIOD: 2000
 DATALOADER:
-    NUM_WORKERS: 1  # Depends on the available memory, 8
+    NUM_WORKERS: 8  # Depends on the available memory, 8
 TEST:
   EVAL_PERIOD: 500  # 100
-  AUG:
-     MAX_SIZE: 640
 VOS:
   SAMPLE_NUMBER: 500
   STARTING_ITER: 1000

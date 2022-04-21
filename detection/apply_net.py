@@ -1,4 +1,4 @@
-# CUDA_VISIBLE_DEVICES=4 python detection/apply_net.py --dataset-dir data --test-dataset deep_fruits_id_fruits_test  --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --inference-config Inference/standard_nms.yaml  --random-seed 0 --image-corruption-level 0 --visualize 1
+# CUDA_VISIBLE_DEVICES=2 python detection/apply_net.py --dataset-dir data --test-dataset deep_fruits_id_fruits_test  --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --inference-config Inference/standard_nms.yaml  --random-seed 0 --image-corruption-level 0 --visualize 1
 """
 Probabilistic Detectron Inference Script
 """
@@ -130,8 +130,9 @@ if __name__ == "__main__":
     # Create arg parser
     arg_parser = setup_arg_parser()
     args = arg_parser.parse_args()
-    if 'ood' in args.test_dataset:
-        args.savefigdir += '_ood'
+    config = args.config_file.split('/')[-1].split('.')[0]
+    dataset = '_'.join(args.test_dataset.split('_')[:-2])
+    args.savefigdir += f'{config}_{dataset}' 
     # Support single gpu inference only.
     args.num_gpus = 1
     # args.num_machines = 8

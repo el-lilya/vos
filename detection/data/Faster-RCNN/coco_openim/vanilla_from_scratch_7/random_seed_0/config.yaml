@@ -2,7 +2,7 @@ CUDNN_BENCHMARK: false
 DATALOADER:
   ASPECT_RATIO_GROUPING: true
   FILTER_EMPTY_ANNOTATIONS: true
-  NUM_WORKERS: 1
+  NUM_WORKERS: 8
   REPEAT_THRESHOLD: 0.0
   SAMPLER_TRAIN: TrainingSampler
 DATASETS:
@@ -272,7 +272,7 @@ MODEL:
     NAME: SemSegFPNHead
     NORM: GN
     NUM_CLASSES: 54
-  WEIGHTS: /netapp/l.lemikhova/projects/VOS/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0/model_final.pth
+  WEIGHTS: detectron2://ImageNetPretrained/MSRA/R-50.pkl
 OUTPUT_DIR: /netapp/l.lemikhova/projects/VOS_forked/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0
 PROBABILISTIC_INFERENCE:
   AFFINITY_THRESHOLD: 0.7
@@ -318,7 +318,7 @@ SOLVER:
   - 6000
   - 8000
   WARMUP_FACTOR: 0.001
-  WARMUP_ITERS: 100
+  WARMUP_ITERS: 1000
   WARMUP_METHOD: linear
   WEIGHT_DECAY: 0.0001
   WEIGHT_DECAY_BIAS: null
