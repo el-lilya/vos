@@ -93,7 +93,7 @@ def fpr_and_fdr_at_recall(y_true, y_score, recall_level=recall_level_default,
     # , fps[cutoff]/(fps[cutoff] + tps[cutoff])
 
 
-def get_measures(_pos, _neg, recall_level=recall_level_default, return_index=False, plot=False):
+def get_measures(_pos, _neg, recall_level=recall_level_default, return_index=False, name=None, plot=False):
     pos = np.array(_pos[:]).reshape((-1, 1))
     neg = np.array(_neg[:]).reshape((-1, 1))
     examples = np.squeeze(np.vstack((pos, neg)))
@@ -109,8 +109,9 @@ def get_measures(_pos, _neg, recall_level=recall_level_default, return_index=Fal
         ax.plot(fpr1, tpr1, linewidth=2,
                          label='10000_1')
         ax.plot([0, 1], [0, 1], linestyle='--', color='grey')
+        plt.grid(True)
         plt.legend(fontsize=12)
-        plt.savefig('10000_1.jpg', dpi=250)
+        plt.savefig(f'{name}.jpg', dpi=250)
     aupr = sk.average_precision_score(labels, examples)
     if return_index:
         fpr, index_id, index_ood = fpr_and_fdr_at_recall(labels, examples, recall_level, return_index=return_index)
@@ -174,8 +175,8 @@ def show_performance(pos, neg, method_name='Ours', recall_level=recall_level_def
 
 
 def print_measures(auroc, aupr, fpr, method_name='Ours', recall_level=recall_level_default):
-    print('\t\t\t\t' + method_name)
-    print('  FPR{:d} AUROC AUPR'.format(int(100*recall_level)))
+    # print('\t\t\t\t' + method_name)
+    print('FPR{:d} AUROC AUPR'.format(int(100*recall_level)))
     print('& {:.2f} & {:.2f} & {:.2f}'.format(100*fpr, 100*auroc, 100*aupr))
     #print('FPR{:d}:\t\t\t{:.2f}'.format(int(100 * recall_level), 100 * fpr))
     #print('AUROC: \t\t\t{:.2f}'.format(100 * auroc))

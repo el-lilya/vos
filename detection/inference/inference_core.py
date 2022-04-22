@@ -92,7 +92,7 @@ class ProbabilisticPredictor(ABC):
                                                                      width)
         return results
 
-    def visualize_inference(self, inputs, results, savedir, name, cfg, energy_threshold=None):
+    def visualize_inference(self, inputs, results, savedir, name, cfg, energy_threshold=None, score_threshold=0.5):
         """
         A function used to visualize final network predictions.
         It shows the original image and up to 20
@@ -104,7 +104,7 @@ class ProbabilisticPredictor(ABC):
             inputs (list): a list that contains input to the model.
             results (List[Instances]): a list of #images elements.
         """
-        max_boxes = 20
+        max_boxes = 30
 
         required_width = inputs[0]['width']
         required_height = inputs[0]['height']
@@ -132,7 +132,7 @@ class ProbabilisticPredictor(ABC):
         # # if name == '133631':
         #     # breakpoint()
         # # breakpoint()
-        if len(scores) == 0 or max(scores) <= 0.5:
+        if len(scores) == 0 or max(scores) <= score_threshold:
             return
 
         v_pred = v_pred.overlay_covariance_instances(

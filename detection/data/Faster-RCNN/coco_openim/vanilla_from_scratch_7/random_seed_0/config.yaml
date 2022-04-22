@@ -11,7 +11,7 @@ DATASETS:
   PROPOSAL_FILES_TEST: []
   PROPOSAL_FILES_TRAIN: []
   TEST:
-  - openim_id_fruits_val
+  - deep_fruits_id_fruits_test
   TRAIN:
   - coco_ext_fruits_train
   - openim_id_fruits_train
@@ -26,7 +26,7 @@ INPUT:
     TYPE: relative_range
   FORMAT: BGR
   MASK_FORMAT: polygon
-  MAX_SIZE_TEST: 1333
+  MAX_SIZE_TEST: 640
   MAX_SIZE_TRAIN: 640
   MIN_SIZE_TEST: 640
   MIN_SIZE_TRAIN:

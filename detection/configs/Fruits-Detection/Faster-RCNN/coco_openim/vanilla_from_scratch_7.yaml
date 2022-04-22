@@ -16,9 +16,11 @@ INPUT:
   MIN_SIZE_TRAIN: (640, )  # (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
   MAX_SIZE_TRAIN: 640  # 640
   MIN_SIZE_TEST: 640  # 800
+  MAX_SIZE_TEST: 640  # 800
 DATASETS:
   TRAIN: ('coco_ext_fruits_train', 'openim_id_fruits_train')
-  TEST: ('openim_id_fruits_val', )
+  # TEST: ('openim_id_fruits_val', )
+  TEST: ('deep_fruits_id_fruits_test', )
   # TEST: ('openim_id_fruits_val', 'coco_ext_fruits_val')
 SOLVER:
   IMS_PER_BATCH: 16

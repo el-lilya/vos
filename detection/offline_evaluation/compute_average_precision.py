@@ -54,12 +54,12 @@ def main(args, cfg=None):
     f1_scores = 2 * (precisions * recalls) / (precisions + recalls)
     optimal_f1_score = f1_scores.argmax(0)
     scores = results_api.eval['scores'].mean(0)[:, :, 0, 2]
-    optimal_score_threshold = [scores[optimal_f1_score_i, i]
-                               for i, optimal_f1_score_i in enumerate(optimal_f1_score)]
-    optimal_score_threshold = np.array(optimal_score_threshold)
-    optimal_score_threshold = optimal_score_threshold[optimal_score_threshold != 0]
+    optimal_score_threshold_orig = [scores[optimal_f1_score_i, i] for i, optimal_f1_score_i in enumerate(optimal_f1_score)]
+    optimal_score_threshold = np.array(optimal_score_threshold_orig)
+    # optimal_score_threshold = optimal_score_threshold[optimal_score_threshold != 0]
+    optimal_score_threshold = optimal_score_threshold[optimal_score_threshold != -1.0]
     optimal_score_threshold = optimal_score_threshold.mean()
-
+    # breakpoint()
     print("Classification Score at Optimal F-1 Score: {}".format(optimal_score_threshold))
     text_file_name = os.path.join(
         inference_output_dir,

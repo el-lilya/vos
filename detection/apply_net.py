@@ -97,10 +97,9 @@ def main(args):
                                                       savedir=args.savefigdir,
                                                       name=str(input_im[0]['image_id']),
                                                       cfg=cfg,
-                                                      energy_threshold=5.732,  # recall 80, fpr 52
-                                                    #   energy_threshold=4.241,  # recall 95, fpr 83
-                                                    #   energy_threshold=5.091, # vos_7 openim
+                                                      energy_threshold=4.7,  # recall 80, fpr 48
                                                     #   energy_threshold=8.868,
+                                                      score_threshold=0.5
                                                       )
 
 

@@ -20,6 +20,7 @@ def setup_all_datasets(dataset_dir, image_root_corruption_prefix=None,):
     root_ann_dir='/netapp/l.lemikhova/projects/VOS_forked/vos/data'
     setup_coco_only_fruits_dataset(root_img_dir, root_ann_dir)
     setup_coco_ext_fruits_dataset(root_img_dir, root_ann_dir)
+    setup_coco_neg_fruits_dataset(root_ann_dir=root_ann_dir)
     setup_openim_id_fruits_dataset(root_img_dir, root_ann_dir)
     setup_openim_ood_fruits_dataset(root_img_dir, root_ann_dir)
     setup_openim_ood_sim_fruits_dataset(root_img_dir, root_ann_dir)
@@ -28,8 +29,28 @@ def setup_all_datasets(dataset_dir, image_root_corruption_prefix=None,):
     setup_deep_fruits_ood_fruits_dataset(root_img_dir, root_ann_dir)
     setup_openim_full_fruits_dataset(root_img_dir, root_ann_dir)
 
+def setup_coco_neg_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/animals', root_ann_dir='./data'):
+    img_dir = f'{root_img_dir}/coco/full/'
+    test_image_dir = os.path.join(img_dir, 'val2017')
+
+    ann_dir = f'{root_ann_dir}/coco_neg_ood'
+    test_json_annotations = os.path.join(
+        ann_dir, 'COCO-Format', 'test_coco_format.json')
+
+    register_coco_instances(
+        "coco_neg_ood_fruits_test",
+        {},
+        test_json_annotations,
+        test_image_dir)
+    MetadataCatalog.get(
+        "coco_neg_ood_fruits_test").thing_classes = metadata.OPENIM_FRUITS_ID_THING_CLASSES
+    MetadataCatalog.get(
+        "coco_neg_ood_fruits_test").thing_dataset_id_to_contiguous_id = metadata.OPENIM_FRUITS_THING_DATASET_ID_TO_CONTIGUOUS_ID
+
+
+
 def setup_coco_only_fruits_dataset(root_img_dir='/ssd/l.lemikhova/data/fruits', root_ann_dir='./data'):
-    img_dir = f'{root_img_dir}/coco'
+    img_dir = f'{root_img_dir}/coco/full/'
     train_image_dir = os.path.join(img_dir, 'train2017')
     test_image_dir = os.path.join(img_dir, 'train2017')
 

@@ -40,8 +40,8 @@ def get_results(id_data, ood_data, args, type_ood):
         ood_score = -np.max(F.softmax(torch.stack(ood_data['inter_feat'])[:, :-1], dim=1).cpu().data.numpy(), axis=1)
 
     
-    # print('len(id_score)', len(id_score))
-    # print('len(ood_score)', len(ood_score))
+    print('len(id_score)', len(id_score))
+    print('len(ood_score)', len(ood_score))
 
     measures = get_measures(-id_score, -ood_score, recall_level=recall_level_default, plot=True)
     if args.energy:

@@ -19,6 +19,7 @@ INPUT:
   MIN_SIZE_TRAIN: (480, 512, 544, 576, 608, 640)
   MAX_SIZE_TRAIN: 640
   MIN_SIZE_TEST: 640
+  MAX_SIZE_TEST: 640
 DATASETS:
   TRAIN: ('coco_ext_fruits_train', 'openim_id_fruits_train')
   TEST: ('openim_id_fruits_val', )

@@ -12,8 +12,8 @@ matplotlib.use('AGG')
 import matplotlib.pyplot as plt
 from metric_utils import *
 
-# recall_level_default = 0.8
-recall_level_default = 0.95
+recall_level_default = 0.8
+# recall_level_default = 0.95
 
 
 parser = argparse.ArgumentParser(description='Evaluates an OOD Detector',
@@ -51,10 +51,10 @@ else:
 ###########
 ########
 print('Deep fruits:')
-# print('len(id_score)', len(id_score))
-# print('len(ood_score)', len(ood_score))
+print('len(id_score)', len(id_score))
+print('len(ood_score)', len(ood_score))
 
-measures = get_measures(-id_score, -ood_score, recall_level=recall_level_default, plot=True)
+measures = get_measures(-id_score, -ood_score, recall_level=recall_level_default, name=args.name, plot=True)
 if args.energy:
     print_measures(measures[0], measures[1], measures[2], 'energy')
 else:
