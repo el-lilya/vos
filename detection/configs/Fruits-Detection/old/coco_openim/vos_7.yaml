@@ -1,0 +1,43 @@
+# CUDA_VISIBLE_DEVICES=0 python vos/detection/train_net_gmm.py --num-gpus 1 --config-file Fruits-Detection/Faster-RCNN/coco_openim/vos_7.yaml --random-seed 1 
+
+_BASE_: "../../../Base-RCNN-FPN.yaml"
+MODEL:
+  # META_ARCHITECTURE: "GeneralizedRCNN"
+  META_ARCHITECTURE: "GeneralizedRCNNLogisticGMM"
+  WEIGHTS: "/netapp/l.lemikhova/projects/VOS_forked/vos/detection/data/Faster-RCNN/coco_openim/vanilla_from_scratch_7/random_seed_0/model_0004999.pth"
+  # WEIGHTS: "/netapp/l.lemikhova/projects/VOS_forked/vos/detection/data/Faster-RCNN/coco_openim/vos_7/random_seed_0/model_final.pth"
+
+
+  MASK_ON: False
+  RESNETS:
+    DEPTH: 50
+  ROI_HEADS:
+    # NAME: "StandardROIHeads"
+    NAME: "ROIHeadsLogisticGMMNew"
+    NUM_CLASSES: 7
+INPUT:
+  MIN_SIZE_TRAIN: (640, )  # (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
+  MAX_SIZE_TRAIN: 640  # 640
+  MIN_SIZE_TEST: 640  # 800
+  MAX_SIZE_TEST: 640  # 800
+# INPUT:
+#   MIN_SIZE_TRAIN: (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
+#   MIN_SIZE_TEST: 800
+DATASETS:
+  TRAIN: ('coco_ext_fruits_train', 'openim_id_fruits_train')
+  # TEST: ('openim_id_fruits_val', )
+  TEST: ('deep_fruits_id_fruits_test', )
+SOLVER:
+  IMS_PER_BATCH: 16
+  BASE_LR: 0.02
+  STEPS: (1000, 3000)
+  MAX_ITER: 4000  # 17.4 epochs
+  WARMUP_ITERS: 100
+  CHECKPOINT_PERIOD: 2000
+DATALOADER:
+    NUM_WORKERS: 8  # Depends on the available memory, 8
+TEST:
+  EVAL_PERIOD: 500  # 100
+VOS:
+  SAMPLE_NUMBER: 500
+  STARTING_ITER: 1000

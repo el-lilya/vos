@@ -1,0 +1,47 @@
+# CUDA_VISIBLE_DEVICES=1 python vos/detection/train_net_gmm.py --num-gpus 1 --config-file Fruits-Detection/faster-rcnn_vos.yaml --random-seed 0 --resume --dataset-dir=data/COCO/coco
+_BASE_: "../../../Base-RCNN-FPN.yaml"
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNNLogisticGMM"
+  # WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  WEIGHTS: "https://dl.fbaipublicfiles.com/detectron2/COCO-Detection/faster_rcnn_R_50_FPN_3x/137849458/model_final_280758.pkl"
+
+#  PROPOSAL_GENERATOR:
+#    NAME: "RPNLogistic"
+  MASK_ON: False
+  RESNETS:
+    DEPTH: 50
+  ROI_HEADS:
+    NAME: "ROIHeadsLogisticGMMNew"
+    NUM_CLASSES: 3
+
+INPUT:
+  # MIN_SIZE_TRAIN: (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
+  MIN_SIZE_TRAIN: (480, )
+  MAX_SIZE_TRAIN: 480
+  MIN_SIZE_TEST: 480
+  MAX_SIZE_TEST: 480
+DATASETS:
+  TRAIN: ('coco_fruits_train',)
+  TEST: ('coco_fruits_val',)
+SOLVER:
+  LR_SCHEDULER_NAME: WarmupCosineLR
+  IMS_PER_BATCH: 4  # 16
+  BASE_LR: 0.007
+  # BASE_LR: 0.02
+  # STEPS: (12000, 16000)
+  MAX_ITER: 3000  # 15 epochs
+  WARMUP_ITERS: 100
+  CHECKPOINT_PERIOD: 500
+TEST:
+  AUG:
+    MAX_SIZE: 640
+    MIN_SIZES: (480, 640)
+  EVAL_PERIOD: 250
+DATALOADER:
+    NUM_WORKERS: 1  # Depends on the available memory, 8
+
+VOS:
+  STARTING_ITER: 2000  # 12000
+  SAMPLE_NUMBER: 1000
+
+
