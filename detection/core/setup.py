@@ -95,6 +95,11 @@ def setup_arg_parser():
         type=int,
         default=0
     )
+    arg_parser.add_argument(
+        '--energy_thr',
+        type=float,
+        default=0
+    )
 
     return arg_parser
 

@@ -94,12 +94,11 @@ def main(args):
                         
                         predictor.visualize_inference(input_im,
                                                       outputs,
-                                                      savedir=args.savefigdir,
+                                                      savedir=f'{args.savefigdir}/{args.test_dataset}',
                                                       name=str(input_im[0]['image_id']),
                                                       cfg=cfg,
-                                                      energy_threshold=4.7,  # recall 80, fpr 48
-                                                    #   energy_threshold=8.868,
-                                                      score_threshold=0.5
+                                                      energy_threshold=args.energy_thr,  
+                                                      score_threshold=0.5745
                                                       )
 
 
@@ -130,7 +129,7 @@ if __name__ == "__main__":
     arg_parser = setup_arg_parser()
     args = arg_parser.parse_args()
     config = args.config_file.split('/')[-1].split('.')[0]
-    dataset = '_'.join(args.test_dataset.split('_')[:-2])
+    dataset = '_'.join(args.test_dataset.split('_')[:-1])
     args.savefigdir += f'{config}_{dataset}' 
     # Support single gpu inference only.
     args.num_gpus = 1

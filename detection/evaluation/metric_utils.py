@@ -1,5 +1,6 @@
 import numpy as np
 import sklearn.metrics as sk
+import json 
 
 recall_level_default = 0.95
 
@@ -23,7 +24,7 @@ def stable_cumsum(arr, rtol=1e-05, atol=1e-08):
     return out
 
 
-def fpr_and_fdr_at_recall(y_true, y_score, recall_level=recall_level_default,
+def fpr_and_fdr_at_recall(y_true, y_score, recall_levels=[recall_level_default],
                           pos_label=None, return_index=False):
 
     classes = np.unique(y_true)
@@ -61,39 +62,21 @@ def fpr_and_fdr_at_recall(y_true, y_score, recall_level=recall_level_default,
 
     recall = tps / tps[-1]
     recall_fps = fps / fps[-1]
-    # breakpoint()
-    ## additional code for calculating.
-    if return_index:
-        recall_level_fps = 1 - recall_level_default
-        index_for_tps = threshold_idxs[np.argmin(np.abs(recall - recall_level))]
-        index_for_fps = threshold_idxs[np.argmin(np.abs(recall_fps - recall_level_fps))]
-        index_for_id_initial = []
-        index_for_ood_initial = []
-        for index in range(index_for_fps, index_for_tps + 1):
-            if y_true[index] == 1:
-                index_for_id_initial.append(desc_score_indices[index])
-            else:
-                index_for_ood_initial.append(desc_score_indices[index])
-    # import ipdb;
-    # ipdb.set_trace()
-    ##
+
     last_ind = tps.searchsorted(tps[-1])
     sl = slice(last_ind, None, -1)  # [last_ind::-1]
     recall, fps, tps, thresholds = np.r_[recall[sl], 1], np.r_[fps[sl], 0], np.r_[tps[sl], 0], thresholds[sl]
-
-    cutoff = np.argmin(np.abs(recall - recall_level))
-    print('energy threshold', thresholds[cutoff])
-    # 8.868, orig
-    # 5.091 fruits vos_7
-    # breakpoint()
-    if return_index:
-        return fps[cutoff] / (np.sum(np.logical_not(y_true))), index_for_id_initial, index_for_ood_initial
-    else:
-        return fps[cutoff] / (np.sum(np.logical_not(y_true)))
+    res = []
+    for recall_level in recall_levels:
+        cutoff = np.argmin(np.abs(recall - recall_level))
+        # print(f'recall level={recall_level}, energy threshold={thresholds[cutoff]}')
+        res.append(fps[cutoff] / (np.sum(np.logical_not(y_true))))
+    return res
+    # return fps[cutoff] / (np.sum(np.logical_not(y_true)))
     # , fps[cutoff]/(fps[cutoff] + tps[cutoff])
 
 
-def get_measures(_pos, _neg, recall_level=recall_level_default, return_index=False, name=None, plot=False):
+def get_measures(_pos, _neg, recall_levels=[recall_level_default], name=None, plot=False):
     pos = np.array(_pos[:]).reshape((-1, 1))
     neg = np.array(_neg[:]).reshape((-1, 1))
     examples = np.squeeze(np.vstack((pos, neg)))
@@ -105,20 +88,22 @@ def get_measures(_pos, _neg, recall_level=recall_level_default, return_index=Fal
         # breakpoint()
         import matplotlib.pyplot as plt
         fpr1, tpr1, thresholds = sk.roc_curve(labels, examples, pos_label=1)
+        with open(f'detection/evaluation/json/{name}_roc.json', 'w') as f:
+            json.dump({'fpr': fpr1.tolist(), 'tpr': tpr1.tolist()}, f)
         fig, ax = plt.subplots(figsize=(10, 8))
         ax.plot(fpr1, tpr1, linewidth=2,
-                         label='10000_1')
+                         label=name)
         ax.plot([0, 1], [0, 1], linestyle='--', color='grey')
         plt.grid(True)
         plt.legend(fontsize=12)
-        plt.savefig(f'{name}.jpg', dpi=250)
+        plt.savefig(f'detection/evaluation/plots/{name}.jpg', dpi=250)
     aupr = sk.average_precision_score(labels, examples)
-    if return_index:
-        fpr, index_id, index_ood = fpr_and_fdr_at_recall(labels, examples, recall_level, return_index=return_index)
-        return auroc, aupr, fpr, index_id, index_ood
-    else:
-        fpr= fpr_and_fdr_at_recall(labels, examples, recall_level)
-        return auroc, aupr, fpr
+    pr, recall, thresholds = sk.precision_recall_curve(labels, examples, pos_label=1)
+    with open(f'detection/evaluation/json/{name}_pr.json', 'w') as f:
+        json.dump({'pr': pr.tolist(), 'recall': recall.tolist()}, f)
+
+    fprs= fpr_and_fdr_at_recall(labels, examples, recall_levels)
+    return auroc, aupr, fprs
 
 def get_measures_entangled(_pos, _neg, _pos1, _neg1,
                            recall_level=recall_level_default, return_index=False, plot=False):
@@ -174,10 +159,10 @@ def show_performance(pos, neg, method_name='Ours', recall_level=recall_level_def
     # print('FDR{:d}:\t\t\t{:.2f}'.format(int(100 * recall_level), 100 * fdr))
 
 
-def print_measures(auroc, aupr, fpr, method_name='Ours', recall_level=recall_level_default):
+def print_measures(auroc, aupr, fprs, method_name='Ours', recall_levels=[recall_level_default]):
     # print('\t\t\t\t' + method_name)
-    print('FPR{:d} AUROC AUPR'.format(int(100*recall_level)))
-    print('& {:.2f} & {:.2f} & {:.2f}'.format(100*fpr, 100*auroc, 100*aupr))
+    print('FPR{:d} FPR{:d} AUROC AUPR'.format(int(100*recall_levels[0]), int(100*recall_levels[1])))
+    print('& {:.2f} & {:.2f} & {:.2f} & {:.2f}'.format(100*fprs[0], 100*fprs[1], 100*auroc, 100*aupr))
     #print('FPR{:d}:\t\t\t{:.2f}'.format(int(100 * recall_level), 100 * fpr))
     #print('AUROC: \t\t\t{:.2f}'.format(100 * auroc))
     #print('AUPR:  \t\t\t{:.2f}'.format(100 * aupr))

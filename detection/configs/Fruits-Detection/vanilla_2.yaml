@@ -1,0 +1,33 @@
+# CUDA_VISIBLE_DEVICES=0,1 python detection/train_net.py --num-gpus 2 --config-file Fruits-Detection/vanilla_1.yaml --random-seed 0 --resume
+_BASE_: "../Base-RCNN-FPN.yaml"
+MODEL:
+  META_ARCHITECTURE: "GeneralizedRCNN"
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+
+  MASK_ON: False
+  RESNETS:
+    DEPTH: 50
+  ROI_HEADS:
+    NAME: "StandardROIHeads"
+    NUM_CLASSES: 7
+INPUT:
+  MIN_SIZE_TRAIN: (640, )  # (480, 512, 544, 576, 608, 640, 672, 704, 736, 768, 800)
+  MAX_SIZE_TRAIN: 640  # 640
+  MIN_SIZE_TEST: 640  # 800
+  MAX_SIZE_TEST: 640  # 800
+DATASETS:
+  TRAIN: ('coco_id_train', 'openim_id_train')
+  TEST: ('openim_id_val', 'coco_id_val')
+SOLVER:
+  IMS_PER_BATCH: 16
+  BASE_LR: 0.002 
+  # STEPS: (12000, 16000)
+  # MAX_ITER: 18000  # 17.4 epochs
+  STEPS: (6000, 8000)
+  MAX_ITER: 9000  # 17.4 epochs
+  WARMUP_ITERS: 1000
+  CHECKPOINT_PERIOD: 1000
+DATALOADER:
+    NUM_WORKERS: 8  # Depends on the available memory, 8
+TEST:
+  EVAL_PERIOD: 500  # 500

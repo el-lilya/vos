@@ -8,3 +8,4 @@
 *visualization*
 *.png
 *.jpg
+/detection/evaluation/json/*.json

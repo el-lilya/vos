@@ -4,6 +4,7 @@ from scipy.stats import norm, chi2
 
 from detectron2.utils.visualizer import Visualizer, ColorMode, _SMALL_OBJECT_AREA_THRESH
 from detectron2.utils.colormap import random_color
+import matplotlib.colors as mplc
 
 
 class ProbabilisticVisualizer(Visualizer):
@@ -159,15 +160,15 @@ class ProbabilisticVisualizer(Visualizer):
                 height_ratio = (y1 - y0) / \
                     np.sqrt(self.output.height * self.output.width)
                 lighter_color = self._change_color_brightness(
-                    color, brightness_factor=0.7)
+                    color, brightness_factor=0.9)
                 # breakpoint()
-                font_size = (
-                    np.clip((height_ratio - 0.02) / 0.08 + 1, 1.2, 2)
-                    * 0.5
-                    * self._default_font_size * 1
-                    # * self._default_font_size * 3
-                )
-                # font_size = self._default_font_size * 1.5
+                # font_size = (
+                #     np.clip((height_ratio - 0.02) / 0.08 + 1, 1.2, 2)
+                #     * 0.5
+                #     # * self._default_font_size * 1
+                #     * self._default_font_size * 3
+                # )
+                font_size = self._default_font_size * 3
                 self.draw_text(
                     labels[i],
                     text_pos,
@@ -439,3 +440,49 @@ class ProbabilisticVisualizer(Visualizer):
         rotation = np.degrees(np.arctan2(*vec[::-1, 0]))
 
         return width, height, rotation
+    
+    def draw_text(
+        self,
+        text,
+        position,
+        *,
+        font_size=None,
+        color="g",
+        horizontal_alignment="center",
+        rotation=0,
+    ):
+        """
+        Args:
+            text (str): class label
+            position (tuple): a tuple of the x and y coordinates to place text on image.
+            font_size (int, optional): font of the text. If not provided, a font size
+                proportional to the image width is calculated and used.
+            color: color of the text. Refer to `matplotlib.colors` for full list
+                of formats that are accepted.
+            horizontal_alignment (str): see `matplotlib.text.Text`
+            rotation: rotation angle in degrees CCW
+        Returns:
+            output (VisImage): image object with text drawn.
+        """
+        if not font_size:
+            font_size = self._default_font_size
+
+        # since the text background is dark, we don't want the text to be dark
+        color = np.maximum(list(mplc.to_rgb(color)), 0.2)
+        color[np.argmax(color)] = max(0.8, np.max(color))
+
+        x, y = position
+        self.output.ax.text(
+            x,
+            y,
+            text,
+            size=font_size * self.output.scale,
+            family="sans-serif",
+            bbox={"facecolor": "black", "alpha": 0.5, "pad": 0.3, "edgecolor": "none"},
+            verticalalignment="top",
+            horizontalalignment=horizontal_alignment,
+            color=color,
+            zorder=10,
+            rotation=rotation,
+        )
+        return self.output

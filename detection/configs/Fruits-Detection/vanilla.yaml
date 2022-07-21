@@ -17,7 +17,7 @@ INPUT:
   MAX_SIZE_TEST: 640  # 800
 DATASETS:
   TRAIN: ('coco_id_train', 'openim_id_train')
-  TEST: ('coco_id_val', 'openim_id_val')
+  TEST: ('openim_id_val', 'coco_id_val')
 SOLVER:
   IMS_PER_BATCH: 16
   BASE_LR: 0.02 # random_seed_0
